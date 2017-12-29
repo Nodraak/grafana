@@ -1,4 +1,5 @@
 
+
 # chkconfig: 2345 80 05
 # description: Grafana web server & backend
 # processname: grafana
@@ -39,8 +40,8 @@ DAEMON=/usr/sbin/$NAME
 umask 0027
 
 if [ ! -x $DAEMON ]; then
-  echo "Program not installed or not executable"
-  exit 5
+	echo "Program not installed or not executable"
+	exit 5
 fi
 
 . /lib/lsb/init-functions
@@ -57,15 +58,15 @@ fi
 DAEMON_OPTS="--pidfile=${PID_FILE} --config=${CONF_FILE} cfg:default.paths.data=${DATA_DIR} cfg:default.paths.logs=${LOG_DIR} cfg:default.paths.plugins=${PLUGINS_DIR}"
 
 function checkUser() {
-  if [ `id -u` -ne 0 ]; then
-  	echo "You need root privileges to run this script"
-  	exit 4
-  fi
+	if [ `id -u` -ne 0 ]; then
+		echo "You need root privileges to run this script"
+		exit 4
+	fi
 }
 
 case "$1" in
-  start)
-  checkUser
+	start)
+	checkUser
 	log_daemon_msg "Starting $DESC"
 
 	pid=`pidofproc -p $PID_FILE grafana`
@@ -79,7 +80,7 @@ case "$1" in
 	mkdir -p "$LOG_DIR" "$DATA_DIR" && chown "$GRAFANA_USER":"$GRAFANA_GROUP" "$LOG_DIR" "$DATA_DIR"
 	touch "$PID_FILE" && chown "$GRAFANA_USER":"$GRAFANA_GROUP" "$PID_FILE"
 
-  if [ -n "$MAX_OPEN_FILES" ]; then
+	if [ -n "$MAX_OPEN_FILES" ]; then
 		ulimit -n $MAX_OPEN_FILES
 	fi
 
@@ -88,13 +89,13 @@ case "$1" in
 	return=$?
 	if [ $return -eq 0 ]
 	then
-	  sleep 1
+		sleep 1
 
-    # check if pid file has been written two
-	  if ! [[ -s $PID_FILE ]]; then
-	    log_end_msg 1
-	    exit 1
-	  fi
+		# check if pid file has been written two
+		if ! [[ -s $PID_FILE ]]; then
+			log_end_msg 1
+			exit 1
+		fi
 
 		i=0
 		timeout=10
@@ -102,17 +103,17 @@ case "$1" in
 		while { cat "$PID_FILE" | xargs kill -0; } >/dev/null 2>&1
 		do
 			i=$(($i + 1))
-      if [ $i -gt $timeout ]; then
-			  log_end_msg 1
-			  exit 1
+			if [ $i -gt $timeout ]; then
+				log_end_msg 1
+				exit 1
 			fi
 			sleep 1
 		done
-  fi
-  log_end_msg $return
+	fi
+	log_end_msg $return
 	;;
-  stop)
-  checkUser
+	stop)
+	checkUser
 	log_daemon_msg "Stopping $DESC"
 
 	if [ -f "$PID_FILE" ]; then
@@ -132,18 +133,19 @@ case "$1" in
 	fi
 	log_end_msg 0
 	;;
-  status)
+	status)
 	status_of_proc -p $PID_FILE grafana grafana && exit 0 || exit $?
-    ;;
-  restart|force-reload)
+		;;
+	restart|force-reload)
 	if [ -f "$PID_FILE" ]; then
 		$0 stop
 		sleep 1
 	fi
 	$0 start
 	;;
-  *)
+	*)
 	log_success_msg "Usage: $0 {start|stop|restart|force-reload|status}"
 	exit 3
 	;;
 esac
+
